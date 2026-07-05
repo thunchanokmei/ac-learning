@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import MobileShell from "@/components/MobileShell";
 import {
   Bot,
@@ -10,6 +9,7 @@ import {
   Loader2,
   Paperclip,
   Send,
+  Sparkles,
   User,
   X,
 } from "lucide-react";
@@ -26,15 +26,17 @@ type ChatMessage = {
 export default function TutorPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [mode, setMode] = useState("Explain");
   const [question, setQuestion] = useState("");
   const [file, setFile] = useState<File | null>(null);
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
       role: "assistant",
-      text: "สวัสดีครับ เหม่ยเหมย 👋 เลือกโหมดแล้วถาม AI Tutor ได้เลย จะให้อธิบาย สรุป หรือสร้าง Quiz ก็ได้ครับ",
+      text: "สวัสดีครับ 👋 เลือกโหมดที่ต้องการ แล้วพิมพ์คำถามหรือแนบไฟล์ได้เลยครับ",
     },
   ]);
 
@@ -58,14 +60,14 @@ export default function TutorPage() {
     ];
 
     if (!allowedTypes.includes(selectedFile.type)) {
-      setErrorMessage("Only PDF, JPG, PNG, or WEBP files are allowed.");
+      setErrorMessage("รองรับเฉพาะไฟล์ PDF, JPG, PNG หรือ WEBP เท่านั้น");
       return;
     }
 
     const maxSize = 10 * 1024 * 1024;
 
     if (selectedFile.size > maxSize) {
-      setErrorMessage("File is too large. Please upload a file under 10MB.");
+      setErrorMessage("ไฟล์ใหญ่เกินไป กรุณาอัปโหลดไฟล์ไม่เกิน 10MB");
       return;
     }
 
@@ -90,12 +92,21 @@ export default function TutorPage() {
       })
       .join("\n");
   };
+  const handleQuestionChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setQuestion(event.target.value);
+
+    const textarea = event.currentTarget;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
 
   const handleSendMessage = async () => {
     setErrorMessage("");
 
     if (!question.trim() && !file) {
-      setErrorMessage("Please type a message or upload a file.");
+      setErrorMessage("กรุณาพิมพ์คำถามหรือแนบไฟล์ก่อนส่ง");
       return;
     }
 
@@ -104,12 +115,17 @@ export default function TutorPage() {
       role: "user",
       text:
         question.trim() ||
-        `Uploaded file: ${file?.name || "file"} (${mode} mode)`,
+        `แนบไฟล์: ${file?.name || "file"} (${mode} mode)`,
       fileName: file?.name,
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setQuestion("");
+    requestAnimationFrame(() => {
+      if (messageInputRef.current) {
+        messageInputRef.current.style.height = "48px";
+      }
+    });
     setLoading(true);
 
     const formData = new FormData();
@@ -137,7 +153,7 @@ export default function TutorPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        setErrorMessage(result.error || "Something went wrong.");
+        setErrorMessage(result.error || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
         setLoading(false);
         return;
       }
@@ -150,7 +166,7 @@ export default function TutorPage() {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch {
-      setErrorMessage("AI Tutor failed to generate a response.");
+      setErrorMessage("AI Tutor ไม่สามารถตอบได้ในตอนนี้ กรุณาลองใหม่อีกครั้ง");
     }
 
     setLoading(false);
@@ -158,89 +174,109 @@ export default function TutorPage() {
 
   const getPlaceholder = () => {
     if (mode === "Explain") {
-      return "ถามอะไรกับ AI Tutor ได้เลย...";
+      return "พิมพ์เรื่องที่อยากให้อธิบาย...";
     }
 
     if (mode === "Summarize") {
-      return "พิมพ์เนื้อหาหรือแนบ PDF ให้สรุป...";
+      return "พิมพ์เนื้อหาหรือแนบไฟล์ที่ต้องการสรุป...";
     }
 
-    return "พิมพ์หัวข้อที่อยากให้สร้าง quiz...";
+    return "พิมพ์หัวข้อที่อยากฝึกทำควิซ...";
+  };
+
+  const getModeDescription = () => {
+    if (mode === "Explain") {
+      return "อธิบายเนื้อหาให้เข้าใจง่าย พร้อมตัวอย่าง";
+    }
+
+    if (mode === "Summarize") {
+      return "สรุปใจความสำคัญจากข้อความหรือไฟล์";
+    }
+
+    return "สร้างคำถามแบบฝึกหัดเพื่อทบทวน";
   };
 
   return (
     <MobileShell>
-      <section className="mb-4 rounded-[28px] bg-gradient-to-br from-[#cf2f2f] to-[#b71c1c] p-5 text-white">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-red-700">
-            <Bot size={30} />
+      <section className="mb-5">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-700 ring-4 ring-white shadow-sm">
+            <Bot size={34} />
           </div>
 
           <div>
-            <h2 className="text-lg font-extrabold">AC Learning Tutor</h2>
-            <p className="text-xs text-red-100">
-              Chat with your ABAC BBA assistant
+            <p className="text-sm font-semibold text-red-600">
+              AC Learning Tutor
             </p>
+            <h1 className="text-3xl font-bold text-slate-900">AI Tutor</h1>
           </div>
         </div>
       </section>
 
-      <section className="mb-3 rounded-3xl bg-white p-3 shadow">
+      <section className="mb-4 rounded-[30px] bg-white p-3 shadow-sm">
         <div className="grid grid-cols-3 gap-2">
-          {MODES.map((item) => (
-            <button
-              key={item}
-              onClick={() => {
-                setMode(item);
-                setErrorMessage("");
-              }}
-              className={`rounded-2xl border px-2 py-2 text-xs font-bold ${
-                mode === item
-                  ? "border-red-700 bg-red-700 text-white"
+          {MODES.map((item) => {
+            const active = mode === item;
+
+            return (
+              <button
+                key={item}
+                onClick={() => {
+                  setMode(item);
+                  setErrorMessage("");
+                }}
+                className={`rounded-2xl border px-2 py-3 text-sm font-bold transition ${active
+                  ? "border-red-700 bg-red-700 text-white shadow-sm shadow-red-100"
                   : "border-red-100 bg-red-50 text-red-700"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
+                  }`}
+              >
+                {item}
+              </button>
+            );
+          })}
         </div>
       </section>
 
-      <section className="flex h-[520px] flex-col rounded-3xl bg-white shadow">
-        <div className="border-b border-red-100 px-4 py-3">
-          <p className="text-sm font-bold text-red-700">Chat</p>
-          <p className="text-xs text-gray-500">Current mode: {mode}</p>
+      <section className="flex h-[600px] flex-col overflow-hidden rounded-[32px] bg-white shadow-sm">
+        <div className="border-b border-red-100 px-4 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Chat</h2>
+              <p className="text-sm text-slate-500">{getModeDescription()}</p>
+            </div>
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50 text-red-700">
+              <Sparkles size={20} />
+            </div>
+          </div>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto bg-red-50/50 p-4">
+        <div className="flex-1 space-y-4 overflow-y-auto bg-[#fff7f7] p-4">
           {messages.map((message) => {
             const isUser = message.role === "user";
 
             return (
               <div
                 key={message.id}
-                className={`flex items-end gap-2 ${
-                  isUser ? "justify-end" : "justify-start"
-                }`}
+                className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"
+                  }`}
               >
                 {!isUser && (
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-700 text-white">
-                    <Bot size={17} />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-700 text-white shadow-sm">
+                    <Bot size={18} />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[78%] rounded-3xl px-4 py-3 text-sm leading-6 shadow-sm ${
-                    isUser
-                      ? "rounded-br-md bg-red-700 text-white"
-                      : "rounded-bl-md bg-white text-gray-800"
-                  }`}
+                  className={`max-w-[78%] rounded-[24px] px-4 py-3 text-sm leading-6 shadow-sm ${isUser
+                    ? "rounded-br-md bg-red-700 text-white"
+                    : "rounded-bl-md border border-red-100 bg-white text-slate-800"
+                    }`}
                 >
                   {message.fileName && (
                     <div
-                      className={`mb-2 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs ${
-                        isUser ? "bg-white/15" : "bg-red-50 text-red-700"
-                      }`}
+                      className={`mb-2 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs ${isUser ? "bg-white/15" : "bg-red-50 text-red-700"
+                        }`}
                     >
                       <FileText size={14} />
                       <span className="truncate">{message.fileName}</span>
@@ -251,8 +287,8 @@ export default function TutorPage() {
                 </div>
 
                 {isUser && (
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-600">
-                    <User size={17} />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 shadow-sm">
+                    <User size={18} />
                   </div>
                 )}
               </div>
@@ -261,14 +297,14 @@ export default function TutorPage() {
 
           {loading && (
             <div className="flex items-end gap-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-700 text-white">
-                <Bot size={17} />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-700 text-white shadow-sm">
+                <Bot size={18} />
               </div>
 
-              <div className="rounded-3xl rounded-bl-md bg-white px-4 py-3 text-sm text-gray-500 shadow-sm">
+              <div className="rounded-[24px] rounded-bl-md border border-red-100 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
                 <div className="flex items-center gap-2">
                   <Loader2 size={16} className="animate-spin text-red-700" />
-                  AI Tutor is typing...
+                  กำลังตอบ...
                 </div>
               </div>
             </div>
@@ -292,6 +328,7 @@ export default function TutorPage() {
                 ) : (
                   <ImageIcon size={18} />
                 )}
+
                 <span className="truncate">{file.name}</span>
               </div>
 
@@ -319,16 +356,18 @@ export default function TutorPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-700"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-700"
             >
-              <Paperclip size={20} />
+              <Paperclip size={22} />
             </button>
 
             <textarea
-              className="max-h-[100px] min-h-[44px] flex-1 resize-none rounded-2xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-red-500"
+              ref={messageInputRef}
+              rows={1}
+              className="min-h-[48px] flex-1 resize-none overflow-hidden rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-base leading-6 outline-none shadow-sm focus:border-red-400"
               placeholder={getPlaceholder()}
               value={question}
-              onChange={(event) => setQuestion(event.target.value)}
+              onChange={handleQuestionChange}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {
                   event.preventDefault();
@@ -341,12 +380,12 @@ export default function TutorPage() {
               type="button"
               onClick={handleSendMessage}
               disabled={loading}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-red-700 text-white disabled:bg-gray-300"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-700 text-white shadow-lg shadow-red-100 disabled:bg-slate-300 disabled:shadow-none"
             >
               {loading ? (
-                <Loader2 size={20} className="animate-spin" />
+                <Loader2 size={21} className="animate-spin" />
               ) : (
-                <Send size={20} />
+                <Send size={21} />
               )}
             </button>
           </div>

@@ -11,7 +11,7 @@ import {
   Hash,
   LogOut,
   Mail,
-  Table,
+  Armchair,
   UserCircle,
 } from "lucide-react";
 
@@ -215,7 +215,7 @@ export default function ProfilePage() {
                       {booking.room_name}
                     </p>
                     <p className="text-sm text-slate-500">
-                      Table {booking.table_name}
+                      {booking.table_name}
                     </p>
                   </div>
 
@@ -235,13 +235,13 @@ export default function ProfilePage() {
                     {booking.booking_time}
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-slate-700">
+                  <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
                     <DoorOpen size={15} className="text-slate-500" />
                     {booking.room_name}
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-2xl bg-slate-50 px-3 py-2 text-slate-700">
-                    <Table size={15} className="text-slate-500" />
+                  <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
+                    <Armchair size={15} className="text-slate-500" />
                     {booking.seat_count
                       ? `${booking.seat_count} seats`
                       : "Seats -"}

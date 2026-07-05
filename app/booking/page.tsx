@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import MobileShell from "@/components/MobileShell";
 import BookingModal from "@/components/BookingModal";
 import { supabase } from "@/lib/supabase";
-import { CalendarDays, Clock, DoorOpen, Users, CheckCircle, XCircle } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  DoorOpen,
+} from "lucide-react";
+import DeskIcon from "@/components/DeskIcon";
 
 const TIMES = ["09:00", "11:00", "13:00", "15:00"];
 
@@ -44,8 +50,8 @@ export default function BookingPage() {
   const [selectedTable, setSelectedTable] = useState<StudyTable | null>(null);
 
   const [message, setMessage] = useState("");
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
     checkUser();
@@ -123,11 +129,17 @@ export default function BookingPage() {
   const isRoomFull = (roomId: string) => {
     const roomTables = getTablesByRoom(roomId);
 
-    if (roomTables.length === 0) {
-      return false;
-    }
+    if (roomTables.length === 0) return false;
 
     return roomTables.every((table) => isTableBooked(table.id));
+  };
+
+  const showBookingSuccessPopup = () => {
+    setShowSuccessPopup(true);
+
+    setTimeout(() => {
+      setShowSuccessPopup(false);
+    }, 1800);
   };
 
   const handleConfirmBooking = async (
@@ -164,94 +176,115 @@ export default function BookingPage() {
     await fetchBookings();
   };
 
-  const showBookingSuccessPopup = () => {
-    setShowSuccessPopup(true);
-
-    setTimeout(() => {
-      setShowSuccessPopup(false);
-    }, 1000);
-  };
-
   const today = new Date().toISOString().split("T")[0];
 
   return (
     <MobileShell>
       {showSuccessPopup && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/10 px-4">
-          <div className="flex min-h-[150px] w-[260px] flex-col items-center justify-center rounded-3xl bg-white p-6 text-center shadow-2xl">
-            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-700">
-              <CheckCircle size={40} />
-            </div>
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/25 px-4">
+          <div className="w-full max-w-[290px] rounded-[32px] bg-white px-6 py-7 shadow-2xl">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-green-50">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+                  <CheckCircle2 size={28} strokeWidth={2.5} />
+                </div>
+              </div>
 
-            <p className="text-lg font-bold text-green-700">
-              Booking successful!
-            </p>
+              <h2 className="text-[18px] font-bold leading-none text-slate-900">
+                Booking successful!
+              </h2>
+
+              <p className="mt-3 text-sm leading-6 text-slate-500">
+                Your room has been reserved.
+              </p>
+            </div>
           </div>
         </div>
       )}
+
+      <section className="mb-5">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-700 ring-4 ring-white shadow-sm">
+            <DoorOpen size={34} />
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-red-600">
+              Room Booking
+            </p>
+            <h1 className="text-3xl font-bold text-slate-900">Book Room</h1>
+          </div>
+        </div>
+      </section>
+
       {message && (
-        <div
-          className={`mb-4 rounded-2xl p-3 text-sm ${message.includes("successful")
-            ? "bg-green-50 text-green-700"
-            : "bg-red-50 text-red-700"
-            }`}
-        >
+        <div className="mb-4 rounded-[24px] border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-700">
           {message}
         </div>
       )}
 
-      <section className="mb-5 rounded-3xl bg-white p-4 shadow">
-        <div className="mb-3 flex items-center gap-2 text-red-700">
-          <CalendarDays size={20} />
-          <h2 className="font-bold">Select Date</h2>
+      <section className="mb-4 rounded-[32px] bg-white p-4 shadow-sm">
+        <div className="mb-3 flex items-center gap-2">
+          <CalendarDays size={20} className="text-red-700" />
+          <h2 className="text-lg font-bold text-slate-900">Select Date</h2>
         </div>
 
         <input
           type="date"
           min={today}
-          className="block w-full min-w-0 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none focus:border-red-400"
+          className="block w-full min-w-0 appearance-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-700 outline-none focus:border-red-400"
           value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
+          onChange={(event) => setSelectedDate(event.target.value)}
         />
       </section>
 
-      <section className="mb-5 rounded-3xl bg-white p-4 shadow">
-        <div className="mb-3 flex items-center gap-2 text-red-700">
-          <Clock size={20} />
-          <h2 className="font-bold">Select Time</h2>
+      <section className="mb-4 rounded-[32px] bg-white p-4 shadow-sm">
+        <div className="mb-3 flex items-center gap-2">
+          <Clock3 size={20} className="text-red-700" />
+          <h2 className="text-lg font-bold text-slate-900">Select Time</h2>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          {TIMES.map((time) => (
-            <button
-              key={time}
-              onClick={() => setSelectedTime(time)}
-              className={`rounded-2xl border p-3 font-bold ${selectedTime === time
-                ? "border-red-700 bg-red-700 text-white"
-                : "border-red-100 bg-red-50 text-red-700"
-                }`}
-            >
-              {time}
-            </button>
-          ))}
+          {TIMES.map((time) => {
+            const active = selectedTime === time;
+
+            return (
+              <button
+                key={time}
+                onClick={() => setSelectedTime(time)}
+                className={`rounded-[22px] border px-4 py-4 text-base font-bold transition ${active
+                  ? "border-red-700 bg-red-700 text-white shadow-sm shadow-red-100"
+                  : "border-red-100 bg-red-50 text-red-700"
+                  }`}
+              >
+                {time}
+              </button>
+            );
+          })}
         </div>
       </section>
 
       {loadingData && (
-        <div className="rounded-2xl bg-white p-4 text-center text-gray-500 shadow">
+        <div className="mb-4 rounded-[28px] bg-white p-5 text-center text-sm text-slate-500 shadow-sm">
           Loading rooms...
         </div>
       )}
 
       {!selectedDate || !selectedTime ? (
-        <div className="rounded-3xl border border-dashed border-red-200 bg-white p-5 text-center text-sm text-gray-500">
+        <div className="rounded-[30px] border border-dashed border-red-200 bg-white p-6 text-center text-sm text-slate-500 shadow-sm">
           Please select date and time before choosing a room.
         </div>
       ) : (
-        <section className="mb-5 rounded-3xl bg-white p-4 shadow">
-          <div className="mb-3 flex items-center gap-2 text-red-700">
-            <DoorOpen size={20} />
-            <h2 className="font-bold">Select Room</h2>
+        <section className="mb-4 rounded-[32px] bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Select Room</h2>
+              <p className="text-sm text-slate-500">
+                {selectedDate} • {selectedTime}
+              </p>
+            </div>
+
+            <DoorOpen size={24} className="text-red-700" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -264,15 +297,18 @@ export default function BookingPage() {
                   key={room.id}
                   disabled={full}
                   onClick={() => setSelectedRoom(room)}
-                  className={`rounded-3xl border p-5 text-left shadow-sm ${full
-                    ? "cursor-not-allowed border-gray-200 bg-gray-200 text-gray-400"
+                  className={`rounded-[26px] border p-4 text-left transition ${full
+                    ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
                     : active
-                      ? "border-red-700 bg-red-700 text-white"
-                      : "border-red-100 bg-white text-gray-800 hover:border-red-400"
+                      ? "border-red-700 bg-red-700 text-white shadow-sm shadow-red-100"
+                      : "border-red-100 bg-red-50 text-slate-900"
                     }`}
                 >
-                  <p className="text-lg font-extrabold">{room.room_name}</p>
-                  <p className="mt-1 text-xs">
+                  <p className="text-lg font-bold">{room.room_name}</p>
+                  <p
+                    className={`mt-1 text-xs font-medium ${active ? "text-red-100" : full ? "text-slate-400" : "text-red-700"
+                      }`}
+                  >
                     {full ? "Unavailable" : "Available"}
                   </p>
                 </button>
@@ -283,15 +319,17 @@ export default function BookingPage() {
       )}
 
       {selectedRoom && (
-        <section className="rounded-3xl bg-white p-4 shadow">
-          <div className="mb-3 flex items-center gap-2 text-red-700">
-            <Users size={20} />
-            <h2 className="font-bold">Select Table</h2>
-          </div>
+        <section className="rounded-[32px] bg-white p-4 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Select Table</h2>
+              <p className="text-sm text-slate-500">
+                {selectedRoom.room_name} • {selectedTime}
+              </p>
+            </div>
 
-          <p className="mb-3 text-sm text-gray-500">
-            {selectedRoom.room_name} • {selectedDate} • {selectedTime}
-          </p>
+            <DeskIcon size={24} className="text-red-700" />
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             {getTablesByRoom(selectedRoom.id).map((table) => {
@@ -302,14 +340,20 @@ export default function BookingPage() {
                   key={table.id}
                   disabled={booked}
                   onClick={() => setSelectedTable(table)}
-                  className={`rounded-3xl border p-4 text-left shadow-sm ${booked
-                    ? "cursor-not-allowed border-gray-200 bg-gray-200 text-gray-400"
-                    : "border-red-100 bg-red-50 text-gray-800 hover:border-red-500"
+                  className={`rounded-[26px] border p-4 text-left transition ${booked
+                    ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                    : "border-red-100 bg-red-50 text-slate-900 hover:border-red-300"
                     }`}
                 >
-                  <p className="text-lg font-extrabold">{table.table_name}</p>
-                  <p className="mt-1 text-sm">Seats: {table.seat_count}</p>
-                  <p className="mt-2 text-xs">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-lg font-bold">{table.table_name}</p>
+                  </div>
+
+                  <p className="text-sm">Seats: {table.seat_count}</p>
+                  <p
+                    className={`mt-2 text-xs font-medium ${booked ? "text-slate-400" : "text-red-700"
+                      }`}
+                  >
                     {booked ? "Unavailable" : "Available"}
                   </p>
                 </button>

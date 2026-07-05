@@ -14,7 +14,7 @@ const activities = [
 export default function HomePage() {
   return (
     <MobileShell title="AC Learning">
-      <section className="mb-5 rounded-3xl bg-red-700 p-5 text-white shadow-lg">
+      <section className="mb-4 rounded-[28px] bg-gradient-to-br from-[#cf2f2f] to-[#b71c1c] p-5 text-white">
         <div className="flex items-center gap-4">
           <Image
             src="/images/logo.jpg"
@@ -28,7 +28,7 @@ export default function HomePage() {
             <p className="text-sm text-red-100">Welcome back</p>
             <h2 className="text-xl font-bold">AC Learning</h2>
             <p className="text-sm text-red-100">
-              Ai Community learning space
+              AI Community learning space
             </p>
           </div>
         </div>

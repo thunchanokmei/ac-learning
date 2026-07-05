@@ -1,21 +1,27 @@
-import BottomNav from "./BottomNav";
+"use client";
+
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import BottomNav from "@/components/BottomNav";
 
 export default function MobileShell({
-  title,
   children,
 }: {
-  title?: string;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [pathname]);
+
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#fff5f5_0%,#ffffff_100%)]">
-      <div className="mx-auto min-h-screen max-w-md bg-white/90 px-4 pb-24 pt-5 shadow-xl">
-        {title && (
-          <h1 className="mb-4 text-2xl font-bold text-red-700">{title}</h1>
-        )}
+    <div className="mx-auto min-h-[100dvh] max-w-[430px] bg-[#fff9f9]">
+      <main className="px-4 pt-[calc(34px+env(safe-area-inset-top))] pb-[calc(116px+env(safe-area-inset-bottom))]">
         {children}
-      </div>
+      </main>
+
       <BottomNav />
-    </main>
+    </div>
   );
 }

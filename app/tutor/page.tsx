@@ -34,7 +34,7 @@ export default function TutorPage() {
     {
       id: 1,
       role: "assistant",
-      text: "สวัสดีครับ เหม่ยเหมย 👋 เลือกโหมดแล้วถามจี้จี้ AI Tutor ได้เลย จะให้อธิบาย สรุป หรือสร้าง Quiz ก็ได้ครับ",
+      text: "สวัสดีครับ เหม่ยเหมย 👋 เลือกโหมดแล้วถาม AI Tutor ได้เลย จะให้อธิบาย สรุป หรือสร้าง Quiz ก็ได้ครับ",
     },
   ]);
 
@@ -169,8 +169,8 @@ export default function TutorPage() {
   };
 
   return (
-    <MobileShell title="AI Tutor">
-      <section className="mb-4 rounded-3xl bg-red-700 p-4 text-white shadow-lg">
+    <MobileShell>
+      <section className="mb-4 rounded-[28px] bg-gradient-to-br from-[#cf2f2f] to-[#b71c1c] p-5 text-white">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-red-700">
             <Bot size={30} />
@@ -206,7 +206,7 @@ export default function TutorPage() {
         </div>
       </section>
 
-      <section className="flex h-[600px] flex-col rounded-3xl bg-white shadow">
+      <section className="flex h-[520px] flex-col rounded-3xl bg-white shadow">
         <div className="border-b border-red-100 px-4 py-3">
           <p className="text-sm font-bold text-red-700">Chat</p>
           <p className="text-xs text-gray-500">Current mode: {mode}</p>

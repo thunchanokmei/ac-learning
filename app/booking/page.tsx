@@ -175,7 +175,7 @@ export default function BookingPage() {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <MobileShell title="Book Room">
+    <MobileShell>
       {showSuccessPopup && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/10 px-4">
           <div className="flex min-h-[150px] w-[260px] flex-col items-center justify-center rounded-3xl bg-white p-6 text-center shadow-2xl">
@@ -209,7 +209,7 @@ export default function BookingPage() {
         <input
           type="date"
           min={today}
-          className="w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-red-500"
+          className="block w-full min-w-0 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 outline-none focus:border-red-400"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
         />

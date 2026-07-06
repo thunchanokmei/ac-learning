@@ -46,8 +46,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mb-4 rounded-[28px] border border-red-100 bg-white p-3 shadow-sm">
-        <div className="mb-2 flex items-center justify-between">
+      <section className="mb-4 rounded-[28px] border border-red-100 bg-white p-4 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-slate-900">
               Class Schedule
@@ -66,7 +66,7 @@ export default function HomePage() {
             width={900}
             height={500}
             priority
-            className="h-[145px] w-full rounded-[18px] object-cover"
+            className="h-full w-full rounded-[18px] object-cover"
           />
         </div>
       </section>

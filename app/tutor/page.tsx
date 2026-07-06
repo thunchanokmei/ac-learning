@@ -364,7 +364,7 @@ export default function TutorPage() {
             <textarea
               ref={messageInputRef}
               rows={1}
-              className="min-h-[48px] flex-1 resize-none overflow-hidden rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-base leading-6 outline-none shadow-sm focus:border-red-400"
+              className="min-h-[10px] flex-1 resize-none overflow-hidden rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-base leading-6 outline-none shadow-sm focus:border-red-400"
               placeholder={getPlaceholder()}
               value={question}
               onChange={handleQuestionChange}

@@ -17,7 +17,7 @@ export default function MobileShell({
 
   return (
     <div className="mx-auto min-h-[100dvh] max-w-[430px] bg-[#fff9f9]">
-      <main className="px-4 pt-[calc(34px+env(safe-area-inset-top))] pb-[calc(116px+env(safe-area-inset-bottom))]">
+      <main className="px-4 pt-[calc(34px+env(safe-area-inset-top))] pb-[calc(132px+env(safe-area-inset-bottom))]">
         {children}
       </main>
 

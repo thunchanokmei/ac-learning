@@ -17,35 +17,42 @@ export default function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t border-red-100 bg-white/95 backdrop-blur"
-      style={{ paddingBottom: "max(10px, env(safe-area-inset-bottom))" }}
+      className="fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 px-3 pt-2"
+      style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
     >
-      <div className="grid grid-cols-5 py-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = pathname === item.href;
+      <nav className="rounded-[32px] border border-white/25 bg-red-700/85 px-2 py-2 backdrop-blur-xl">
+        <div className="grid grid-cols-5 gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href;
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex flex-col items-center justify-center gap-1 py-2"
-            >
-              <Icon
-                size={22}
-                className={active ? "text-red-700" : "text-slate-400"}
-              />
-              <span
-                className={`text-xs ${
-                  active ? "font-semibold text-red-700" : "text-slate-400"
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center justify-center rounded-3xl px-1 py-2 transition active:scale-95 ${
+                  active ? "bg-white/95" : "bg-transparent"
                 }`}
               >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+                <Icon
+                  size={21}
+                  className={active ? "text-red-700" : "text-white/85"}
+                />
+
+                <span
+                  className={`mt-1 text-[11px] leading-none ${
+                    active
+                      ? "font-bold text-red-700"
+                      : "font-semibold text-white/80"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

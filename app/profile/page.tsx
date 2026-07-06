@@ -13,6 +13,8 @@ import {
   Mail,
   Armchair,
   UserCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 type Profile = {
@@ -57,6 +59,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [bookings, setBookings] = useState<BookingDisplay[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showBookings, setShowBookings] = useState(false);
 
   useEffect(() => {
     loadProfilePage();
@@ -175,87 +178,101 @@ export default function ProfilePage() {
       </section>
 
       <section className="mb-5 rounded-[32px] bg-white p-4 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setShowBookings((prev) => !prev)}
+          className="flex w-full items-center justify-between text-left"
+        >
           <div>
             <h2 className="text-xl font-bold text-slate-900">My Bookings</h2>
             <p className="text-sm text-slate-500">
-              Your reserved rooms and tables
+              View your booking history
             </p>
           </div>
 
-          <span className="rounded-full bg-red-50 px-3 py-1 text-sm font-bold text-red-700">
-            {bookings.length}
-          </span>
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-red-50 px-3 py-1 text-sm font-bold text-red-700">
+              {bookings.length}
+            </span>
 
-        {loading ? (
-          <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
-            Loading bookings...
-          </p>
-        ) : bookings.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-red-200 p-6 text-center">
-            <p className="text-sm text-slate-500">No booking yet.</p>
-            <button
-              onClick={() => router.push("/booking")}
-              className="mt-4 rounded-2xl bg-red-700 px-5 py-3 text-sm font-bold text-white"
-            >
-              Book a room
-            </button>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-700">
+              {showBookings ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {bookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="rounded-[26px] border border-red-100 bg-white p-4 shadow-sm"
-              >
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-lg font-bold text-slate-900">
-                      {booking.room_name}
-                    </p>
-                    <p className="text-sm text-slate-500">
-                      {booking.table_name}
-                    </p>
-                  </div>
+        </button>
 
-                  <span className="rounded-full bg-red-700 px-3 py-1 text-xs font-bold text-white">
-                    Reserved
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
-                    <CalendarDays size={15} className="text-red-700" />
-                    {booking.booking_date}
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
-                    <Clock size={15} className="text-red-700" />
-                    {booking.booking_time}
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
-                    <DoorOpen size={15} className="text-slate-500" />
-                    {booking.room_name}
-                  </div>
-
-                  <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
-                    <Armchair size={15} className="text-slate-500" />
-                    {booking.seat_count
-                      ? `${booking.seat_count} seats`
-                      : "Seats -"}
-                  </div>
-                </div>
+        {showBookings && (
+          <div className="mt-4">
+            {loading ? (
+              <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">
+                Loading bookings...
+              </p>
+            ) : bookings.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-red-200 p-6 text-center">
+                <p className="text-sm text-slate-500">No booking yet.</p>
+                <button
+                  onClick={() => router.push("/booking")}
+                  className="mt-4 rounded-2xl bg-red-700 px-5 py-3 text-sm font-bold text-white"
+                >
+                  Book a room
+                </button>
               </div>
-            ))}
+            ) : (
+              <div className="space-y-3">
+                {bookings.map((booking) => (
+                  <div
+                    key={booking.id}
+                    className="rounded-[26px] border border-red-100 bg-white p-4 shadow-sm"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-lg font-bold text-slate-900">
+                          {booking.room_name}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          {booking.table_name}
+                        </p>
+                      </div>
+
+                      <span className="rounded-full bg-red-700 px-3 py-1 text-xs font-bold text-white">
+                        Reserved
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
+                        <CalendarDays size={15} className="text-red-700" />
+                        {booking.booking_date}
+                      </div>
+
+                      <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
+                        <Clock size={15} className="text-red-700" />
+                        {booking.booking_time}
+                      </div>
+
+                      <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
+                        <DoorOpen size={15} className="text-slate-500" />
+                        {booking.room_name}
+                      </div>
+
+                      <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
+                        <Armchair size={15} className="text-slate-500" />
+                        {booking.seat_count
+                          ? `${booking.seat_count} seats`
+                          : "Seats -"}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </section>
 
       <button
         onClick={handleLogout}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-white py-3 font-bold text-red-700 shadow-sm"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-700 py-3.5 font-bold text-white shadow-lg shadow-red-100"
       >
         <LogOut size={20} />
         Logout

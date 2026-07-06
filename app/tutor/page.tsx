@@ -178,7 +178,7 @@ export default function TutorPage() {
     }
 
     if (mode === "Summarize") {
-      return "พิมพ์เนื้อหาหรือแนบไฟล์ที่ต้องการสรุป...";
+      return "พิมพ์เนื้อหาที่ต้องการสรุป...";
     }
 
     return "พิมพ์หัวข้อที่อยากฝึกทำควิซ...";

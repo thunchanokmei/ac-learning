@@ -11,7 +11,6 @@ import {
   Circle,
   Clock3,
   ClipboardList,
-  Flame,
   Plus,
   Trash2,
   X,
@@ -29,6 +28,8 @@ type PlannerTask = {
   created_at: string;
 };
 
+type StatusFilter = "all" | "todo" | "in_progress" | "done";
+
 const PRIORITIES = ["Low", "Medium", "High"];
 const STATUSES = ["todo", "in_progress", "done"];
 
@@ -37,6 +38,7 @@ export default function PlannerPage() {
 
   const [userId, setUserId] = useState<string | null>(null);
   const [tasks, setTasks] = useState<PlannerTask[]>([]);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<PlannerTask | null>(null);
@@ -151,11 +153,17 @@ export default function PlannerPage() {
     await loadPlanner();
   };
 
+  const handleFilterClick = (status: StatusFilter) => {
+    setStatusFilter((prev) => (prev === status ? "all" : status));
+  };
+
   const getStatusLabel = (value: string) => {
     if (value === "todo") return "To do";
     if (value === "in_progress") return "Progress";
-    return "Done";
+    if (value === "done") return "Done";
+    return "All";
   };
+
   const getTaskCardStyle = (status: string) => {
     if (status === "todo") {
       return {
@@ -213,6 +221,11 @@ export default function PlannerPage() {
   ).length;
   const doneCount = tasks.filter((task) => task.status === "done").length;
 
+  const filteredTasks =
+    statusFilter === "all"
+      ? tasks
+      : tasks.filter((task) => task.status === statusFilter);
+
   return (
     <MobileShell>
       <section className="mb-5">
@@ -227,31 +240,72 @@ export default function PlannerPage() {
       </section>
 
       <section className="mb-5 grid grid-cols-3 gap-3">
-        <div className="rounded-[24px] border border-red-100 bg-red-50 p-4 text-center">
+        <button
+          type="button"
+          onClick={() => handleFilterClick("todo")}
+          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${
+            statusFilter === "todo"
+              ? "border-red-300 bg-red-100 ring-2 ring-red-100"
+              : "border-red-100 bg-red-50"
+          }`}
+        >
           <p className="text-2xl font-bold text-red-700">{todoCount}</p>
           <p className="mt-1 text-xs font-medium text-red-700">To do</p>
-        </div>
+        </button>
 
-        <div className="rounded-[24px] border border-yellow-100 bg-yellow-50 p-4 text-center">
-          <p className="text-2xl font-bold text-yellow-600">{progressCount}</p>
+        <button
+          type="button"
+          onClick={() => handleFilterClick("in_progress")}
+          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${
+            statusFilter === "in_progress"
+              ? "border-yellow-300 bg-yellow-100 ring-2 ring-yellow-100"
+              : "border-yellow-100 bg-yellow-50"
+          }`}
+        >
+          <p className="text-2xl font-bold text-yellow-600">
+            {progressCount}
+          </p>
           <p className="mt-1 text-xs font-medium text-yellow-700">Progress</p>
-        </div>
+        </button>
 
-        <div className="rounded-[24px] border border-green-100 bg-green-50 p-4 text-center">
+        <button
+          type="button"
+          onClick={() => handleFilterClick("done")}
+          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${
+            statusFilter === "done"
+              ? "border-green-300 bg-green-100 ring-2 ring-green-100"
+              : "border-green-100 bg-green-50"
+          }`}
+        >
           <p className="text-2xl font-bold text-green-600">{doneCount}</p>
           <p className="mt-1 text-xs font-medium text-green-700">Done</p>
-        </div>
+        </button>
       </section>
 
       <section className="rounded-[32px] bg-white p-4 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-bold text-slate-900">Task List</h2>
             <p className="text-sm text-slate-500">
+              {statusFilter === "all"
+                ? `${tasks.length} tasks total`
+                : `Showing ${filteredTasks.length} ${getStatusLabel(
+                    statusFilter
+                  )} tasks`}
             </p>
           </div>
 
-          <ClipboardList size={24} className="text-red-700" />
+          {statusFilter === "all" ? (
+            <ClipboardList size={24} className="shrink-0 text-red-700" />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setStatusFilter("all")}
+              className="shrink-0 rounded-full bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700"
+            >
+              Show all
+            </button>
+          )}
         </div>
 
         {message && !showAddModal && (
@@ -275,9 +329,19 @@ export default function PlannerPage() {
               Tap + to add your first study plan.
             </p>
           </div>
+        ) : filteredTasks.length === 0 ? (
+          <div className="rounded-[28px] border border-dashed border-red-200 p-8 text-center">
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-700">
+              <ClipboardList size={28} />
+            </div>
+
+            <p className="font-semibold text-slate-800">
+              No tasks in this status
+            </p>
+          </div>
         ) : (
           <div className="space-y-3">
-            {tasks.map((task) => {
+            {filteredTasks.map((task) => {
               const style = getTaskCardStyle(task.status);
 
               return (
@@ -298,8 +362,11 @@ export default function PlannerPage() {
                       </div>
 
                       <h3
-                        className={`text-lg font-bold leading-tight ${task.status === "done" ? "text-green-900" : "text-slate-900"
-                          }`}
+                        className={`text-lg font-bold leading-tight ${
+                          task.status === "done"
+                            ? "text-green-900"
+                            : "text-slate-900"
+                        }`}
                       >
                         <span className="relative inline-block">
                           {task.title}
@@ -312,6 +379,7 @@ export default function PlannerPage() {
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => setDeleteTarget(task)}
                       className="rounded-full bg-white/80 p-2 text-slate-400 transition hover:text-red-700"
                     >
@@ -361,18 +429,22 @@ export default function PlannerPage() {
                       return (
                         <button
                           key={status}
+                          type="button"
                           onClick={() => handleUpdateStatus(task.id, status)}
-                          className={`flex min-w-0 items-center justify-center gap-1 rounded-2xl px-1.5 py-2 text-[11px] font-bold whitespace-nowrap ${active
-                            ? buttonStyle.badge
-                            : "bg-white/80 text-slate-500"
-                            }`}
+                          className={`flex min-w-0 items-center justify-center gap-1 rounded-2xl px-1.5 py-2 text-[11px] font-bold whitespace-nowrap ${
+                            active
+                              ? buttonStyle.badge
+                              : "bg-white/80 text-slate-500"
+                          }`}
                         >
                           <span
                             className={active ? "text-white" : buttonStyle.icon}
                           >
                             {getStatusIcon(status)}
                           </span>
-                          {getStatusLabel(status)}
+                          <span className="whitespace-nowrap">
+                            {getStatusLabel(status)}
+                          </span>
                         </button>
                       );
                     })}
@@ -385,11 +457,12 @@ export default function PlannerPage() {
       </section>
 
       <button
+        type="button"
         onClick={() => {
           resetForm();
           setShowAddModal(true);
         }}
-        className="fixed bottom-[calc(92px+env(safe-area-inset-bottom))] right-[calc(20px+max(0px,(100vw-430px)/2))] z-50 flex h-16 w-16 items-center justify-center rounded-full bg-red-700 text-white shadow-[0_16px_35px_rgba(185,28,28,0.15)]"
+        className="fixed bottom-[calc(124px+env(safe-area-inset-bottom))] right-[calc(20px+max(0px,(100vw-430px)/2))] z-40 flex h-16 w-16 items-center justify-center rounded-full bg-red-700 text-white shadow-[0_16px_35px_rgba(185,28,28,0.18)]"
       >
         <Plus size={32} />
       </button>
@@ -497,6 +570,7 @@ export default function PlannerPage() {
           </div>
         </div>
       )}
+
       {deleteTarget && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/35 px-4">
           <div className="w-full max-w-[340px] rounded-[32px] bg-white p-5 text-center shadow-2xl">
@@ -504,7 +578,9 @@ export default function PlannerPage() {
               <Trash2 size={28} />
             </div>
 
-            <h2 className="text-xl font-bold text-slate-900">Delete this task?</h2>
+            <h2 className="text-xl font-bold text-slate-900">
+              Delete this task?
+            </h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">
               “{deleteTarget.title}” will be removed from your planner.
@@ -512,6 +588,7 @@ export default function PlannerPage() {
 
             <div className="mt-5 grid grid-cols-2 gap-3">
               <button
+                type="button"
                 onClick={() => setDeleteTarget(null)}
                 className="rounded-2xl bg-slate-100 py-3 font-bold text-slate-600"
               >
@@ -519,6 +596,7 @@ export default function PlannerPage() {
               </button>
 
               <button
+                type="button"
                 onClick={async () => {
                   await handleDeleteTask(deleteTarget.id);
                   setDeleteTarget(null);

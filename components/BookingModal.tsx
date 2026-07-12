@@ -110,7 +110,7 @@ export default function BookingModal({
           name="bookingName"
           autoComplete="name"
           className="mb-3 w-full rounded-2xl border border-slate-200 p-3 text-base outline-none focus:border-red-400"
-          placeholder="Your full name"
+          placeholder="Wowza Haha"
           value={studentName}
           onChange={(event) => setStudentName(event.target.value)}
         />
@@ -126,7 +126,7 @@ export default function BookingModal({
           data-lpignore="true"
           data-1p-ignore="true"
           className="mb-4 w-full rounded-2xl border border-slate-200 p-3 text-base outline-none focus:border-red-400"
-          placeholder="6710742534"
+          placeholder="6911111"
           value={studentId}
           onChange={(event) => setStudentId(event.target.value)}
         />

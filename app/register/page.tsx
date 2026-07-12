@@ -126,7 +126,7 @@ export default function RegisterPage() {
           name="fullName"
           autoComplete="name"
           className="mb-3 w-full rounded-xl border border-gray-200 p-3 outline-none focus:border-red-500"
-          placeholder="Justin Biebie"
+          placeholder="Wowza Haha"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
         />

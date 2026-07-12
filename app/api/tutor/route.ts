@@ -2,18 +2,20 @@ import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 import { curriculumContext } from "@/lib/curriculumContext";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
-});
-
 export async function POST(req: NextRequest) {
   try {
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
       return NextResponse.json(
-        { error: "Missing GEMINI_API_KEY in .env.local" },
+        { error: "Missing GEMINI_API_KEY on server." },
         { status: 500 }
       );
     }
+
+    const ai = new GoogleGenAI({
+      apiKey,
+    });
 
     const formData = await req.formData();
 

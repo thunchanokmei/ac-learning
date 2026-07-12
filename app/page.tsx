@@ -114,10 +114,12 @@ export default function HomePage() {
       <section className="mb-5 rounded-[32px] bg-white p-4 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Activities</h2>
+            <h2 className="text-lg font-bold text-slate-900">Activities</h2>
           </div>
 
-          <Megaphone size={24} className="text-red-700" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-700">
+            <Megaphone size={19} />
+          </div>
         </div>
 
         <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">          {activities.map((src, index) => (

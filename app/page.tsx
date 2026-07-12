@@ -6,7 +6,7 @@ import {
   CalendarDays,
   ChevronRight,
   ClipboardList,
-  Sparkles,
+  Megaphone,
   DoorOpen,
 } from "lucide-react";
 
@@ -117,7 +117,7 @@ export default function HomePage() {
             <h2 className="text-xl font-bold text-slate-900">Activities</h2>
           </div>
 
-          <Sparkles size={24} className="text-red-700" />
+          <Megaphone size={24} className="text-red-700" />
         </div>
 
         <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2">          {activities.map((src, index) => (

@@ -233,6 +233,7 @@ export default function BookingPage() {
           type="date"
           min={today}
           className="block w-full min-w-0 appearance-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-700 outline-none focus:border-red-400"
+          placeholder="mm/dd/yyyy"
           value={selectedDate}
           onChange={(event) => setSelectedDate(event.target.value)}
         />

@@ -69,3 +69,8 @@ img {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
+}

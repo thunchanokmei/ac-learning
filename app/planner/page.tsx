@@ -243,11 +243,10 @@ export default function PlannerPage() {
         <button
           type="button"
           onClick={() => handleFilterClick("todo")}
-          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${
-            statusFilter === "todo"
+          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${statusFilter === "todo"
               ? "border-red-300 bg-red-100 ring-2 ring-red-100"
               : "border-red-100 bg-red-50"
-          }`}
+            }`}
         >
           <p className="text-2xl font-bold text-red-700">{todoCount}</p>
           <p className="mt-1 text-xs font-medium text-red-700">To do</p>
@@ -256,11 +255,10 @@ export default function PlannerPage() {
         <button
           type="button"
           onClick={() => handleFilterClick("in_progress")}
-          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${
-            statusFilter === "in_progress"
+          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${statusFilter === "in_progress"
               ? "border-yellow-300 bg-yellow-100 ring-2 ring-yellow-100"
               : "border-yellow-100 bg-yellow-50"
-          }`}
+            }`}
         >
           <p className="text-2xl font-bold text-yellow-600">
             {progressCount}
@@ -271,11 +269,10 @@ export default function PlannerPage() {
         <button
           type="button"
           onClick={() => handleFilterClick("done")}
-          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${
-            statusFilter === "done"
+          className={`rounded-[24px] border p-4 text-center transition active:scale-95 ${statusFilter === "done"
               ? "border-green-300 bg-green-100 ring-2 ring-green-100"
               : "border-green-100 bg-green-50"
-          }`}
+            }`}
         >
           <p className="text-2xl font-bold text-green-600">{doneCount}</p>
           <p className="mt-1 text-xs font-medium text-green-700">Done</p>
@@ -290,8 +287,8 @@ export default function PlannerPage() {
               {statusFilter === "all"
                 ? `${tasks.length} tasks total`
                 : `Showing ${filteredTasks.length} ${getStatusLabel(
-                    statusFilter
-                  )} tasks`}
+                  statusFilter
+                )} tasks`}
             </p>
           </div>
 
@@ -362,11 +359,10 @@ export default function PlannerPage() {
                       </div>
 
                       <h3
-                        className={`text-lg font-bold leading-tight ${
-                          task.status === "done"
+                        className={`text-lg font-bold leading-tight ${task.status === "done"
                             ? "text-green-900"
                             : "text-slate-900"
-                        }`}
+                          }`}
                       >
                         <span className="relative inline-block">
                           {task.title}
@@ -431,11 +427,10 @@ export default function PlannerPage() {
                           key={status}
                           type="button"
                           onClick={() => handleUpdateStatus(task.id, status)}
-                          className={`flex min-w-0 items-center justify-center gap-1 rounded-2xl px-1.5 py-2 text-[11px] font-bold whitespace-nowrap ${
-                            active
+                          className={`flex min-w-0 items-center justify-center gap-1 rounded-2xl px-1.5 py-2 text-[11px] font-bold whitespace-nowrap ${active
                               ? buttonStyle.badge
                               : "bg-white/80 text-slate-500"
-                          }`}
+                            }`}
                         >
                           <span
                             className={active ? "text-white" : buttonStyle.icon}
@@ -500,7 +495,6 @@ export default function PlannerPage() {
             </label>
             <input
               type="text"
-              placeholder="Example: Marketing"
               className="mb-3 w-full rounded-2xl border border-slate-200 bg-white p-3 text-base outline-none focus:border-red-400"
               value={subject}
               onChange={(event) => setSubject(event.target.value)}
@@ -511,7 +505,6 @@ export default function PlannerPage() {
             </label>
             <input
               type="text"
-              placeholder="Example: Review SWOT Analysis"
               className="mb-3 w-full rounded-2xl border border-slate-200 bg-white p-3 text-base outline-none focus:border-red-400"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
@@ -553,12 +546,14 @@ export default function PlannerPage() {
             <label className="mb-1 block text-sm font-semibold text-slate-700">
               Deadline
             </label>
-            <input
-              type="date"
-              className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-base outline-none focus:border-red-400"
-              value={dueDate}
-              onChange={(event) => setDueDate(event.target.value)}
-            />
+            <div className="w-full min-w-0">
+              <input
+                type="date"
+                className="block h-14 w-full min-w-0 max-w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base outline-none focus:border-red-400"
+                value={dueDate}
+                onChange={(event) => setDueDate(event.target.value)}
+              />
+            </div>
 
             <button
               onClick={handleAddTask}

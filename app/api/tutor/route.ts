@@ -79,9 +79,12 @@ ${question || "The student uploaded a file without typing a question."}
 
 Response rules:
 - Answer like a friendly AI tutor in a chat conversation.
+- Answer in Thai unless the student asks for English.
 - Do not use heavy markdown formatting such as ###, **, or long separators.
 - Keep the answer readable and not too long.
-- Answer in Thai unless the student asks for English.
+- When answering curriculum-related questions, rely only on the curriculum context.
+- When answering uploaded-file questions, prioritize the uploaded file content.
+- If the answer is uncertain or not included in the context/file, say so honestly.
 `,
       },
     ];

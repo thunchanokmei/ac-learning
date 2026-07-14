@@ -8,20 +8,12 @@ import {
   CalendarDays,
   Clock,
   DoorOpen,
-  Hash,
   LogOut,
-  Mail,
   Armchair,
   UserCircle,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-
-type Profile = {
-  id: string;
-  full_name: string | null;
-  student_id: string | null;
-};
 
 type Booking = {
   id: string;
@@ -55,8 +47,7 @@ type BookingDisplay = Booking & {
 export default function ProfilePage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [displayName, setDisplayName] = useState("Student");
   const [bookings, setBookings] = useState<BookingDisplay[]>([]);
   const [loading, setLoading] = useState(true);
   const [showBookings, setShowBookings] = useState(false);
@@ -64,6 +55,16 @@ export default function ProfilePage() {
   useEffect(() => {
     loadProfilePage();
   }, []);
+
+  const formatTableName = (tableName: string) => {
+    const value = String(tableName).trim().toLowerCase();
+
+    if (value.startsWith("table")) {
+      return tableName;
+    }
+
+    return `Table ${tableName}`;
+  };
 
   const loadProfilePage = async () => {
     setLoading(true);
@@ -76,15 +77,11 @@ export default function ProfilePage() {
     }
 
     const userId = userData.user.id;
-    setEmail(userData.user.email || "");
 
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
+    const nameFromMetadata = userData.user.user_metadata?.full_name;
+    const nameFromLocalStorage = localStorage.getItem("ac_learning_name");
 
-    setProfile(profileData);
+    setDisplayName(nameFromMetadata || nameFromLocalStorage || "Student");
 
     const { data: bookingData } = await supabase
       .from("bookings")
@@ -94,8 +91,13 @@ export default function ProfilePage() {
 
     const safeBookings = bookingData || [];
 
-    const roomIds = [...new Set(safeBookings.map((booking) => booking.room_id))];
-    const tableIds = [...new Set(safeBookings.map((booking) => booking.table_id))];
+    const roomIds = [
+      ...new Set(safeBookings.map((booking) => booking.room_id)),
+    ];
+
+    const tableIds = [
+      ...new Set(safeBookings.map((booking) => booking.table_id)),
+    ];
 
     const emptyUuid = "00000000-0000-0000-0000-000000000000";
 
@@ -129,6 +131,7 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
+    localStorage.removeItem("ac_learning_name");
     await supabase.auth.signOut();
     router.push("/login");
   };
@@ -146,32 +149,14 @@ export default function ProfilePage() {
               <p className="text-xs font-semibold uppercase tracking-wide text-red-600">
                 My Profile
               </p>
+
               <h1 className="truncate text-2xl font-bold text-slate-900">
-                {profile?.full_name || "Student"}
+                {displayName}
               </h1>
+
               <p className="mt-1 text-sm text-slate-500">
                 AC Learning member
               </p>
-            </div>
-          </div>
-
-          <div className="mt-5 space-y-3">
-            <div className="flex items-center gap-3 rounded-2xl bg-red-50 px-4 py-3">
-              <Hash size={18} className="text-red-700" />
-              <div>
-                <p className="text-xs text-slate-500">Student ID</p>
-                <p className="font-semibold text-slate-800">
-                  {profile?.student_id || "-"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-2xl bg-red-50 px-4 py-3">
-              <Mail size={18} className="text-slate-500" />
-              <div className="min-w-0">
-                <p className="text-xs text-slate-500">Email</p>
-                <p className="truncate font-semibold text-slate-800">{email}</p>
-              </div>
             </div>
           </div>
         </div>
@@ -196,7 +181,11 @@ export default function ProfilePage() {
             </span>
 
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-700">
-              {showBookings ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              {showBookings ? (
+                <ChevronUp size={20} />
+              ) : (
+                <ChevronDown size={20} />
+              )}
             </div>
           </div>
         </button>
@@ -210,7 +199,9 @@ export default function ProfilePage() {
             ) : bookings.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-red-200 p-6 text-center">
                 <p className="text-sm text-slate-500">No booking yet.</p>
+
                 <button
+                  type="button"
                   onClick={() => router.push("/booking")}
                   className="mt-4 rounded-2xl bg-red-700 px-5 py-3 text-sm font-bold text-white"
                 >
@@ -229,8 +220,9 @@ export default function ProfilePage() {
                         <p className="text-lg font-bold text-slate-900">
                           {booking.room_name}
                         </p>
+
                         <p className="text-sm text-slate-500">
-                          {booking.table_name}
+                          {formatTableName(booking.table_name || "")}
                         </p>
                       </div>
 
@@ -251,12 +243,12 @@ export default function ProfilePage() {
                       </div>
 
                       <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
-                        <DoorOpen size={15} className="text-slate-500" />
+                        <DoorOpen size={15} className="text-red-700" />
                         {booking.room_name}
                       </div>
 
                       <div className="flex items-center gap-2 rounded-2xl bg-red-50 px-3 py-2 text-slate-700">
-                        <Armchair size={15} className="text-slate-500" />
+                        <Armchair size={15} className="text-red-700" />
                         {booking.seat_count
                           ? `${booking.seat_count} seats`
                           : "Seats -"}
@@ -271,6 +263,7 @@ export default function ProfilePage() {
       </section>
 
       <button
+        type="button"
         onClick={handleLogout}
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-red-700 py-3.5 font-bold text-white shadow-lg shadow-red-100"
       >

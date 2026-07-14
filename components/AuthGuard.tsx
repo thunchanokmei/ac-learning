@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-const publicRoutes = ["/login", "/register"];
+const publicRoutes = ["/login"];
 
 export default function AuthGuard({
   children,
